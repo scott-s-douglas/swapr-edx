@@ -478,6 +478,44 @@ class SWAPRdb:
             line += 1
         self.conn.commit()
 
+    def parseSubmissions_edX(self,filename,labNumber,term):
+        # Reads an edX-formatted ORA report
+        # TODO: check if the response phase is encoded here or not
+
+        data = []
+        with open(filename, 'rU') as csvfile:
+            inputFile = csv.reader(csvfile, delimiter='\t', quotechar='"')
+            # TODO: change this to operate directly on the file itself, not just blindly copy the whole file into memory
+            for row in inputFile:
+                data.append(row)
+                print(row)
+
+        line = 0
+        foundStart = False
+        while not foundStart:    #Seek out the first line of student data
+            if len(data[line]) >= 1:
+                if data[line][0] == 'Submission': # The data starts right after the header line beginning with 'Submission'
+                    foundStart = True
+            line = line+1
+
+
+        # Go through the data line-by-line, and add students + URLs to the database
+        while line in range(len(data)):
+            if len(data[line]) > 1: # Make sure we don't have a blank line
+                if data[line][0] != '': # Make sure we don't have one of the score lines
+                    wID=data[line][2]
+                    youtubeURL=(data[line][4]) # URL may have some {u'text:[...]} json cruft around it, and I can't rely on the formatting since students paste their URL in
+                    # FIXME: Actually parse the json to find the URL
+                    if youtubeURL not in ['',None]:
+                        # if skipLinkless, then we won't add people who haven't submitted links
+                        if verbose:
+                            print('Adding submission: wID='+wID+', URL='+youtubeURL+', labNumber='+str(labNumber))
+                        if youtubeURL == '':
+                            youtubeURL = None
+                        self.addStudentSubmission(wID,youtubeURL,labNumber,term=term)
+            line += 1
+        self.conn.commit()
+
     def parseExpertEvaluations(self,filename,term='F2014',wIDcol=1):
         # We write the experts file ourselves, so we use a less irritating format than the WebAssign .csv's we have to use for the student data
         data = []

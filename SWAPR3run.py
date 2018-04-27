@@ -1,12 +1,13 @@
 # encoding: utf-8
-# Used Summer 2017 for SOUP, PHYS2211
+# Used Summer 2017 for SOUP, PHYS2211 with Webassign
+# Updated Spring 2018 for edX
 from SWAPR3 import *
 from SWAPR3grades import *
 import os
 
 # ED: Download the student responses to the submission assignment from Webassign and put them
-# makeDatabase('SOUP2017.sqlite')
-db=SWAPRdb('/Users/Scott/Research/SOUP 2017 SWAPR/SOUP2017.sqlite')
+# makeDatabase('swapr-edX.sqlite')
+db=SWAPRdb('swapr-edX.sqlite')
 # db.createTables()
 # db.cursor.execute('''ATTACH DATABASE "/Users/Scott/SWAPR/S2014Campus_legacy.sqlite" AS old''')
 # db.cursor.execute('''SELECT DISTINCT labNumber, questionIndex, wQuestion FROM old.questions''')
@@ -16,7 +17,7 @@ db=SWAPRdb('/Users/Scott/Research/SOUP 2017 SWAPR/SOUP2017.sqlite')
 
 # db.cursor.execute('''DELETE FROM studentEvaluations''')
 # db.cursor.execute('''DELETE FROM submissions''')
-for labNumber in [4]:
+for labNumber in [1]:
     # Define Algorithms
     calibAlgs = [
         calibAlg("BIBI_1",
@@ -53,17 +54,18 @@ for labNumber in [4]:
     # db.cursor.execute('''DELETE FROM ratingKeys WHERE labNumber=?''',[labNumber])
     # db.createTables()
     # db.parseExpertEvaluations('F2014Lab'+str(labNumber)+'Experts.txt')
-    # for file in listdir_nohidden('/Users/Scott/Research/SOUP 2017 SWAPR/Lab {}/Submissions/'.format(labNumber) ):
-    #     print("Parsing "+str(file)+'...')
-    #     db.parseSubmissions(file,labNumber,linkCol=4 if labNumber != 3 else 5,term='SOUP2017', verbose=True)
+    for file in listdir_nohidden('./ORA_downloads/'):
+        print("Parsing "+str(file)+'...')
+        # db.parseSubmissions(file,labNumber,linkCol=4 if labNumber != 3 else 5,term='SOUP2017', verbose=True)
+        db.parseSubmissions_edX(file,1,'PHYS2211_SOUP2018')
     # db.assignURLs(labNumber, term='SOUP2017')
     # db.exportWebassign('Lab{}Output.txt'.format(labNumber),labNumber)
 
     # db.addDefaultRubric(labNumber=labNumber,term="SOUP2016")
     # Gather evaluations and assign weights & grades
-    for file in listdir_nohidden('/Users/Scott/Research/SOUP 2017 SWAPR/Lab {}/Responses/'.format(labNumber)):
-        print("Parsing "+str(file)+'...')
-        db.parseEvaluationsFile(file,labNumber,term='SOUP2017')
+    # for file in listdir_nohidden('/Users/Scott/Research/SOUP 2017 SWAPR/Lab {}/Responses/'.format(labNumber)):
+    #     print("Parsing "+str(file)+'...')
+    #     db.parseEvaluationsFile(file,labNumber,term='SOUP2017')
         
     # We need weightBIBI, weightDIBI_full, weightDIBI_full_curved, and weightOffset
     # assignWeights(db,labNumber=labNumber,f=weightDIBI_full)
@@ -71,10 +73,10 @@ for labNumber in [4]:
     # assignGrades(db,labNumber=labNumber,algorithm=calibAlgs[1])
     # assignGrades(db,labNumber=labNumber,algorithm=calibAlgs[2])
 
-    assignWeights(db,labNumber=labNumber,f=weightBIBI)
-    assignWeights(db,labNumber=labNumber,f=weightOffset)
-    assignGrades(db,labNumber=labNumber,algorithm=calibAlgs[3])
-    assignCalibrationGrades(db,labNumber=labNumber)
-    printCalibrationGradesReport(db,'Lab'+str(labNumber)+'CalibrationGrades.txt',labNumber=labNumber,weightType='weightBIBI')
-    printFinalGradesReport(db,'Lab'+str(labNumber)+'Grades.txt',labNumber=labNumber,algorithm='offMean_1')
-    db.writeCommentsTabDelimited('Lab'+str(labNumber)+'Comments.txt',labNumber=labNumber)
+    # assignWeights(db,labNumber=labNumber,f=weightBIBI)
+    # assignWeights(db,labNumber=labNumber,f=weightOffset)
+    # assignGrades(db,labNumber=labNumber,algorithm=calibAlgs[3])
+    # assignCalibrationGrades(db,labNumber=labNumber)
+    # printCalibrationGradesReport(db,'Lab'+str(labNumber)+'CalibrationGrades.txt',labNumber=labNumber,weightType='weightBIBI')
+    # printFinalGradesReport(db,'Lab'+str(labNumber)+'Grades.txt',labNumber=labNumber,algorithm='offMean_1')
+    # db.writeCommentsTabDelimited('Lab'+str(labNumber)+'Comments.txt',labNumber=labNumber)
